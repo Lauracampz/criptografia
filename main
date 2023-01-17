@@ -1,0 +1,223 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+
+int main(int argc, char *argv[])
+{
+
+    FILE *fp;
+    //char c;
+    // usar tabela ascii
+    char fraseCodificada[5000];
+    int asciiCodificada[5000];
+    int asciiDecodificada[5000];
+    char decodificada[5000];
+    char arquivo [100];
+    int bin[5];
+    int posicaoIntruso=0;
+    printf("Digite o nome do arquivo: ");
+    scanf("%s", arquivo);
+    fp = fopen(arquivo,"r"); // Abre arquivo texto para leitura
+    if(!fp)
+    {
+        printf("Erro na abertura do arquivo.\n");
+        return 0;
+    }
+    int i=0;
+
+    while(!feof(fp)){ // Enquanto não chegar ao final do arquivo
+
+            fraseCodificada[i] = fgetc(fp);
+
+            i++;
+
+    }
+    printf("\n");
+    printf("--------------------\n");
+       //tamanho da string
+	int m=0;
+	printf("Mensagem codificada:\n");
+	printf("--------------------\n");
+	while(fraseCodificada[m]!=10 ){
+            printf("%c", fraseCodificada[m]);
+            m++;
+
+    }
+    printf("\n");
+    printf("\n");
+
+     for(int i=0;i<5;i++){
+
+    	 if(fraseCodificada[i]=='0'){
+    	 	bin[i]=0;
+    	 }
+         else if(fraseCodificada[i]=='1') {
+         	bin[i]=1;
+         }
+
+    }
+
+    //converter o binario para decimal
+    for(int i=0;i<5;i++){
+           posicaoIntruso = posicaoIntruso+((pow(2,i))*(bin[4-i]));    // i=0 bin[4] i=1 bin[3] i=2 bin[2] i=3 bin[1] i=4 bin[0]
+
+    }
+
+
+    	// traduzir mensagem codificada para tabela ascii
+    	int j=5;
+    	int h=0;
+    	int l=0;
+    		while(j<m){
+
+    			asciiCodificada[h]=fraseCodificada[j];
+
+    			if(asciiCodificada[h]>64){
+                   l++;
+
+    			}
+
+    			j++;
+
+    			h++;
+
+
+    		}
+    		l=l-1; //tirando a letra intrusa
+
+    		//printf("ll%d\n",l);
+    		//printf("%d\n",h);
+    		//printf("a%d\n",asciiCodificada[h-1]);
+    		//printf("a%d\n",asciiCodificada[h]);
+
+        if(l%2!=0){
+            asciiCodificada[h]=32;
+
+        }
+        // printf("%d\n",asciiCodificada[h]);
+    	//traduzindo para o alfabelo decodificado
+
+    	int k=0;
+
+
+    	while(k<=h){
+
+
+    	    if ((asciiCodificada[k]>=70 && asciiCodificada[k]<=90) || (asciiCodificada[k]>=102 &&  asciiCodificada[k]<=122)){
+
+   		asciiDecodificada[k]=asciiCodificada[k]-5;
+
+	    }
+	    else if((asciiCodificada[k]>64 && asciiCodificada[k]<70) || (asciiCodificada[k]>96 &&  asciiCodificada[k]<103)){
+	    	asciiDecodificada[k]=asciiCodificada[k]+21;
+
+	    }
+	    else if(asciiCodificada[k]==32){
+	        asciiDecodificada[k]=35;
+
+	    }
+	    else{
+	        asciiDecodificada[k]=asciiCodificada[k];
+
+	    }
+
+
+    			//voltando para letras
+    			decodificada[k]=asciiDecodificada[k];
+    			k++;
+
+    		}
+
+
+
+    	int cj=1;
+    	int p=0;
+    	char aux;
+    	int w=0;
+    	//tirando o caracter intruso
+    	while(w<=h){
+
+    	 	if(w==(posicaoIntruso-1)){
+                while(w<k){
+                    decodificada[w]=decodificada[w+1];
+                    w++;
+    	}
+    	 	}
+            else{
+               w++;
+            }
+
+
+    	}
+        // tirando as posicao intrusa de k
+
+        k=k-2;
+       // printf("%d\n",k);
+        int aux2;
+        //despermutando cada bloco
+         if(l%2!=0){
+            aux2=k-1;
+
+        }
+         else{
+            aux2=k;
+
+         }
+    	int y=0;
+
+
+    	char aux1;
+
+    	while(y<h){
+
+    		if(y<(h/2)){
+    	 	aux1=decodificada[aux2-1-y];
+    	 	decodificada[aux2-1-y]=decodificada[y];
+    	 	decodificada[y]=aux1;
+		aux1=decodificada[aux2-y];
+    	 	decodificada[aux2-y]=decodificada[y+1];
+		decodificada[y+1]=aux1;
+
+    		}
+
+    		y=y+4;
+
+    	}
+
+    	//desrefletindo cada bloco de 2
+    	while(p<h){
+		if(cj<h){
+    	 		aux=decodificada[cj];
+    	 		decodificada[cj]=decodificada[cj-1];
+    	 		decodificada[cj-1]=aux;
+    			cj=cj+2;
+		}
+	p++;
+
+    	}
+
+
+	      int r=0;
+	      printf("----------------------\n");
+        printf("Mensagem decodificada:\n");
+        printf("----------------------\n");
+
+    	while(r<h){
+
+		if(decodificada[r]=='#'){
+
+		decodificada[r]=' ';
+		}
+		printf("%c", decodificada[r]);
+		r++;
+
+    	}
+
+
+ fclose(fp);
+ return 0;
+
+ }
+
